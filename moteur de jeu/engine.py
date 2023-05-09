@@ -79,12 +79,9 @@ def cases_adjacentes(donjon, position):
 
 def intention(donjon, position, dragons, visite = []): # Pour le moment, parcours en largeur
     """
-    while True:
-        for i in range(4):
-            if
+    Parcours en largeur du donjon, renvoie deque qui est le chemin à prendre
     """
     deque = collections.deque(position)
-    visite = []
     dragon = ((None,None),0)
     while len(deque) != 0:
         case = deque.popleft()
@@ -110,10 +107,12 @@ def rencontre(aventurier, dragons, pos):
     Simule la rencontre entre l'aventurier et le dragon d'index pos dans "dragons
     Suppression de l'item de dragons si niveau(aventurier)>=niveau du dragon, "mort de l'aventurier sinon)
     """
-    if dragons[i]['niveau'] <= aventurier['niveau']:
-            dragons.pop(i)
-        else:
-            aventurier = 'mort'
+    for i in len(dragons):
+        if dragons[i][position] == pos
+            if dragons[i]['niveau'] <= aventurier['niveau']:
+                    dragons.pop(i)
+            else:
+                aventurier = 'mort'
 
 def appliquer_chemin(aventurier, dragons, chemin):
     """
