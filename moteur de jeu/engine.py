@@ -15,10 +15,8 @@ def reprPersonnage(personnages):    #converti les tuples en dictionnaires
             if 'niveau' in globals():
                 pass
             elif len(i) == 3:
-                global niveau
                 niveau = 1
             else:
-                global niveau
                 niveau = i[3]
             aventurier = { 'position' : (position), 'niveau' : niveau}
         elif i[0] == 'D':
@@ -90,7 +88,7 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
                 if dragons[i]['niveau'] > dragon:
                     dragon = dragons[i]
                     if i == len(dragons)-1:
-                        return dragon
+                        return deque
         adjacents = cases_adjacentes(donjon, case)
         for i in adjacents:
             if i not in visite:
