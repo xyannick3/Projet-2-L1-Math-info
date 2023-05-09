@@ -98,6 +98,8 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
                 deque.extendleft(intention(donjon, i, dragons, visite))
             else:
                 return None
+        if len(deque) == 0:
+            return None
         return deque
 
 # Tour de l'aventurier
@@ -108,9 +110,10 @@ def rencontre(aventurier, dragons, pos):
     Suppression de l'item de dragons si niveau(aventurier)>=niveau du dragon, "mort de l'aventurier sinon)
     """
     for i in len(dragons):
-        if dragons[i][position] == pos
+        if dragons[i][position] == pos:
             if dragons[i]['niveau'] <= aventurier['niveau']:
                     dragons.pop(i)
+                    return None
             else:
                 aventurier = 'mort'
 
