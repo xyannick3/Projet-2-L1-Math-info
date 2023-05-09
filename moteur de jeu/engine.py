@@ -1,5 +1,6 @@
 # from chargement import *
 # importation des stuctures de donnée de chargement.py, dont donjons pré-fait
+import collections
 
 def reprPersonnage(personnages):    #converti les tuples en dictionnaires
     """
@@ -31,12 +32,12 @@ def reprPersonnage(personnages):    #converti les tuples en dictionnaires
 def pivoter(donjon, position):
     """
     Pivote une case du donjon au coord position en décalant les valeurs vers la droite
+    Position = tuple(ligne, colonne)
     Modifie une valeur de donjon, ne renvoie rien
     """
     donjPivot = donjon[position[0]][position[1]]
-    for i in range(4):
-        donjPivot[i] = donjon[position[0]][position[1]][i-1]
-    donjon[position[0]][position[1]] = donjPivot
+    newcell = (donjPivot[3], donjPivot[0], donjPivot[1], donjPivot[2])
+    donjon[position[0]][position[1]] = newcell
 
 def connecte(donjon, position1, position2):
     """
@@ -59,29 +60,60 @@ def connecte(donjon, position1, position2):
                 return True
     return False
 
+def cases_adjacentes(donjon, position):
+    """
+    Renvoie une liste des coords (x,y) des cases adjacentes à position
+    """
+    adjacents = []
+    if connecte(donjon, position, (position[0]-1, position[1])):
+        adjacents.append((position[0]-1, position[1]))
+    elif connecte(donjon, position, (position[0], position[1]+1)):
+        adjacents.append((position[0], position[1]+1))
+    elif connecte(donjon, position, (position[0]+1, position[1])):
+        adjacents.append((position[0]+1, position[1]))
+    elif connecte(donjon, position, (position[0], position[1]-1)):
+        adjacents.append((position[0], position[1]-1))
+    return adjacents
+
 # Intention de l'aventurier
 
-def intention(donjon, position, dragons):
+def intention(donjon, position, dragons, visite = []): # Pour le moment, parcours en largeur
     """
     while True:
         for i in range(4):
             if
     """
+    deque = collections.deque(position)
+    visite = []
+    dragon = ((None,None),0)
+    while len(deque) != 0:
+        case = deque.popleft()
+        for i in range(len(dragons)):
+            if case == dragons[i]['position']:
+                if dragons[i]['niveau'] > dragon:
+                    dragon = dragons[i]
+                    if i == len(dragons)-1:
+                        return dragon
+        adjacents = cases_adjacentes(donjon, case)
+        for i in adjacents:
+            if i not in visite:
+                visite.append(i)
+                deque.extendleft(intention(donjon, i, dragons, visite))
+            else:
+                return None
+        return deque
 
 # Tour de l'aventurier
 
-def rencontre(aventurier, dragons):
+def rencontre(aventurier, dragons, pos):
     """
-    Vérifie si la position de l'aventurier coincide avec celui d'un item dragon
-    Si oui, assigne 'mort' à l'aventurier si son niveau est inférieur, retire l'item de la liste dragons sinon
+    Simule la rencontre entre l'aventurier et le dragon d'index pos dans "dragons
+    Suppression de l'item de dragons si niveau(aventurier)>=niveau du dragon, "mort de l'aventurier sinon)
     """
-    for i in range(len(dragons)):
-        if dragons[i]['position'] == aventurier['position']:
-            if dragons[i]['niveau'] <= aventurier['niveau']:
-                dragons.pop(i)
-            else:
-                aventurier = 'mort'
-            break
+    if dragons[i]['niveau'] <= aventurier['niveau']:
+            dragons.pop(i)
+        else:
+            aventurier = 'mort'
 
 def appliquer_chemin(aventurier, dragons, chemin):
     """
@@ -89,7 +121,7 @@ def appliquer_chemin(aventurier, dragons, chemin):
     """
     for i in chemin:
         aventurier['position'] = i
-        rencontre(aventurier, dragons)
+    rencontre(aventurier, dragons)
 
 def fin_partie(aventurier, dragons):
     """
