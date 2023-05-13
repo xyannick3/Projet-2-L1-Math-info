@@ -2,20 +2,23 @@
 # importation des stuctures de donnée de chargement.py, dont donjons pré-fait
 import collections
 
+niveau = 0
+
 def reprPersonnage(personnages):    #converti les tuples en dictionnaires
     """
     Renvoie un dictionnaire aventurier et liste de dicrionnaires dragons à partir d'une liste de listes personnages
     Une variable global niveau est également crée.
     aventurier et un item dragon = {position: (x,y), niveau}
     """
+    global niveau
     dragons = []
     for i in personnages:
         position = i[1], i[2]
         if i[0] == 'A':
-            if 'niveau' in globals():
-                pass
-            elif len(i) == 3:
+            if len(i) == 3:
                 niveau = 1
+            elif niveau != 0:
+                pass
             else:
                 niveau = i[3]
             aventurier = { 'position' : (position), 'niveau' : niveau}
@@ -79,7 +82,8 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
     """
     Parcours en largeur du donjon, renvoie deque qui est le chemin à prendre
     """
-    deque = collections.deque(position)
+    deque = collections.deque()
+    deque.appendleft(position)
     dragon = ((None,None),0)
     while len(deque) != 0:
         case = deque.popleft()
@@ -94,8 +98,6 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
             if i not in visite:
                 visite.append(i)
                 deque.extendleft(intention(donjon, i, dragons, visite))
-            else:
-                return None
         if len(deque) == 0:
             return None
         return deque
@@ -112,10 +114,9 @@ def rencontre(aventurier, dragons, pos):
             if dragons[i]['niveau'] <= aventurier['niveau']:
                 dragons.pop(i)
                 aventurier[niveau] += 1
-                return None
             else:
                 aventurier = 'mort'
-                return None
+            return None
 
 def appliquer_chemin(aventurier, dragons, chemin):
     """
