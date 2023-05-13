@@ -110,10 +110,12 @@ def rencontre(aventurier, dragons, pos):
     for i in len(dragons):
         if dragons[i][position] == pos:
             if dragons[i]['niveau'] <= aventurier['niveau']:
-                    dragons.pop(i)
-                    return None
+                dragons.pop(i)
+                aventurier[niveau] += 1
+                return None
             else:
                 aventurier = 'mort'
+                return None
 
 def appliquer_chemin(aventurier, dragons, chemin):
     """
