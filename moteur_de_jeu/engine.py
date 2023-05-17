@@ -92,6 +92,7 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
                 if dragons[i]['niveau'] > dragon:
                     dragon = dragons[i]
                     if i == len(dragons)-1:
+                        deque.append(case)
                         return deque
         adjacents = cases_adjacentes(donjon, case)
         for i in adjacents:
@@ -100,6 +101,7 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
                 deque.extendleft(intention(donjon, i, dragons, visite))
         if len(deque) == 0:
             return None
+        deque.appendleft(case)
         return deque
 
 # Tour de l'aventurier
