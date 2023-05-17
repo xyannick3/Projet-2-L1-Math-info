@@ -118,16 +118,10 @@ class menu() :
                                                                                                                     #pour l'instant c'est juste une copie de brickwall.png
 
         
-    def displaybuttons(self,x,y,texte) :
-        """
-        affiche les boutons et inscript leurs coordonnnées dans self WIP
-        """
-        x1=x-self.xwindow//8
-        y1=y+self.ywindow//8
-        x2=x+self.xwindow//8
-        y2=y+self.ywindow//8
-        fltk.rectangle(x1,y1,x2,y2)
-        fltk.texte((x1+x2)//2,(y1+y2)//2,texte,ancrage="center",tag="button",taille=y1-y2)
+    def displaybutton(self,x1,y1,x2,y2,texte): 
+        fltk.rectangle(x1,y1,x2,y2,couleur='#00008B',epaisseur=1,remplissage='#3B3C36')
+        fltk.texte((x1+x2)//2,(y1+y2)//2,texte,ancrage='center',taille=int((y2-y1)*0.8),couleur='#00008B') 
+        ...
 
 if __name__=='__main__' :
 
@@ -143,7 +137,8 @@ if __name__=='__main__' :
     test=gameGraph()
     test.CreateWindow()
     menutest=menu()
-    menutest.displaybuttons(0,0,0,0)
+    menutest.displaybutton(resolution[0]//2-resolution[0]//10,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//10,resolution[0]//2+resolution[0]//20,'test')
+    fltk.attend_clic_gauche()
     # #test.displayCell(cell=(True,True,True,False),y=0,x=0)
     # listetest=[]
     # comb1=(True,True,True,True)
