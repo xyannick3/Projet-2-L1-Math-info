@@ -1,4 +1,4 @@
-
+import os
 class readin() :
     def __init__(self) :
         ...
@@ -56,5 +56,11 @@ class readin() :
                     maze.append(ligne)
         print(aventurier)
         return maze, aventurier, dragons
+    def getlistofmazes() :
+        entries=os.listdir('media/maps/')
+        return entries
 if __name__=="__main__" :
-    print(readin.lire("media/maps/map_test.txt"))
+    #print(readin.lire("media/maps/map_test.txt"))
+    print(readin.getlistofmazes())
+    ...
+
