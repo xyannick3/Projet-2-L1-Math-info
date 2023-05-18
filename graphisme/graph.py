@@ -118,10 +118,13 @@ class menu() :
                                                                                                                     #pour l'instant c'est juste une copie de brickwall.png
 
         
-    def displaybutton(self,x1,y1,x2,y2,texte): 
-        fltk.rectangle(x1,y1,x2,y2,couleur='#00008B',epaisseur=1,remplissage='#3B3C36')
-        fltk.texte((x1+x2)//2,(y1+y2)//2,texte,ancrage='center',taille=int((y2-y1)*0.8),couleur='#00008B') 
-        ...
+    def button(self,x1,y1,x2,y2,texte): 
+        fltk.rectangle(x1,y1,x2,y2,couleur='black',epaisseur=2,remplissage='#3B3C36',tag="bouton")
+        fltk.ligne(x1+1,y1+1,x2+2,y1+1,epaisseur=3,couleur='black',tag="bouton")
+        fltk.ligne(x1+1,y1+2,x2+2,y1+2,epaisseur=1,couleur='#7F7F7F',tag="bouton")
+        fltk.ligne(x2+1,y1+1,x2+1,y2+1,epaisseur=3,couleur='black',tag="bouton")
+        fltk.ligne(x2-1,y1+1,x2-1,y2+1,epaisseur=1,couleur='#7F7F7F',tag="bouton")
+        fltk.texte((x1+x2)//2,(y1+y2)//2,texte,ancrage='center',taille=int((y2-y1)*0.6),couleur='black',tag="bouton",police="papyrus") 
 
 if __name__=='__main__' :
 
@@ -137,7 +140,9 @@ if __name__=='__main__' :
     test=gameGraph()
     test.CreateWindow()
     menutest=menu()
-    menutest.displaybutton(resolution[0]//2-resolution[0]//10,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//10,resolution[0]//2+resolution[0]//20,'test')
+    menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Settings')
+    menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//4+resolution[0]//20,"Play")
+    menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]-resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]-resolution[0]//4+resolution[0]//20,"Exit")
     fltk.attend_clic_gauche()
     # #test.displayCell(cell=(True,True,True,False),y=0,x=0)
     # listetest=[]

@@ -11,13 +11,56 @@ import changement.change as change
 #
 #
 if __name__=="__main__" :
-    content=change.readin.lire("media/maps/map1.txt")
-    maze=content[0]
-    aventurier=content[1]
-    dragons=content[2]
+    
     resolution=(1000,1000)
     test=graph.gameGraph()
     test.CreateWindow()
+    menutest=graph.menu()
+    menuee=True
+    game=False
+    while menuee :
+        ...
+        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Settings')
+        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//4+resolution[0]//20,"Play")
+        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]-resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]-resolution[0]//4+resolution[0]//20,"Quit")
+        data=fltk.attend_clic_gauche()
+        print(data)
+        # print('x1',data[0]>=resolution[0]//2-resolution[0]//5,'\nx2',data[0]<=resolution[0]//2+resolution[0]//5,'\ny1',data[1]>=resolution[0]//4-resolution[0]//20,'\ny2',data[1]<=resolution[0]//4+resolution[0]//20)
+        if (data[0]>=resolution[0]//2-resolution[0]//5 and data[0]<=resolution[0]//2+resolution[0]//5) and (data[1]>=resolution[0]//4-resolution[0]//20 and data[1]<=resolution[0]//4+resolution[0]//20) :
+            menuee=False
+            game=True
+        elif (data[0]>=resolution[0]//2-resolution[0]//5 and data[0]<=resolution[0]//2+resolution[0]//5) and (data[1]>=resolution[0]-resolution[0]//4-resolution[0]//20 and data[1]<=resolution[0]-resolution[0]//4+resolution[0]//20): 
+            menuee=False
+    fltk.efface('bouton')
+
+    maps=change.readin.getlistofmazes()
+    nombreboutons=len(maps)
+    listofx1s=[]
+    listofx2s=[]
+    listofy1s=[]
+    listofy2s=[]
+    for i in range(len(maps)) : 
+        x1=resolution[0]//2-resolution[0]//5
+        listofx1s.append(x1)
+        y1=(resolution[0]//nombreboutons)*(i+1)
+        listofy1s.append(y1)
+        x2=resolution[0]//2+resolution[0]//5
+        listofx2s.append(x2)
+        y2=(resolution[0]//nombreboutons)*(i+1)-resolution[0]//20
+        listofy2s.append(y2)
+        menutest.button(x1,y1,x2,y2,maps[i])
+    selectionmap=True
+    while selectionmap :
+        data=fltk.attend_clic_gauche()
+        for i in range(len(maps)) :
+            print('x1',data[0]>=listofx1s[i],'\nx2',data[0]<=listofx2s[i],'\ny1',data[1]>=listofy1s[i],'\ny2',data[1]<=listofy2s[i])
+            if (data[0]>=listofx1s[i] and data[0]<=listofx2s[i]) and (data[1]<=listofy1s[i] and data[1]>=listofy2s[i]) :
+                content=change.readin.lire(f"media/maps/{maps[i]}")
+                selectionmap=False
+                fltk.efface('bouton')
+    maze=content[0]
+    aventurier=content[1]
+    dragons=content[2]
     test.displayMaze(maze)
     test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
     for drag in dragons :
@@ -25,8 +68,10 @@ if __name__=="__main__" :
     print('donjon=',maze)
     print('position = ',aventurier['position'])
     print('dragons=',dragons)
-    while True :
-        print("intention",engine.intention(maze,aventurier['position'],dragons))
+
+    while game :
+        print("intention",engine.intention(maze,aventurier['position'],dragons)) # test
+        print("intention Tarjan",engine.intention1(maze,aventurier['position'],dragons)) # test 
         data=test.mappingclick(fltk.attend_clic_gauche())
         data=[data[1],data[0]]
         #print(data)
