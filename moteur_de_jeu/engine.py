@@ -45,6 +45,8 @@ def connecte(donjon, position1, position2):
     Vérifie si 2 cases aux coords position1 et position2 sont connecté
     Renvoie True si oui, False sinon
     """
+    print("position1 :", position1)
+    print('position2 :', position2)
     if position1[0] == position2[0] :
         if position1[1] < position2[1]:
             if donjon[position1[0]][position1[1]][1] and donjon[position2[0]][position2[1]][3]:
@@ -65,14 +67,15 @@ def cases_adjacentes(donjon, position):
     """
     Renvoie une liste des coords (x,y) des cases adjacentes à position
     """
+    print("position :",position)
     adjacents = []
-    if connecte(donjon, position, (position[0]-1, position[1])):
+    if (position[0] != 0) and connecte(donjon, position, (position[0]-1, position[1])):
         adjacents.append((position[0]-1, position[1]))
-    elif connecte(donjon, position, (position[0], position[1]+1)):
+    if (position[1] != len(donjon[0])-1) and connecte(donjon, position, (position[0], position[1]+1)):
         adjacents.append((position[0], position[1]+1))
-    elif connecte(donjon, position, (position[0]+1, position[1])):
+    if (position[0] != len(donjon)-1) and connecte(donjon, position, (position[0]+1, position[1])):
         adjacents.append((position[0]+1, position[1]))
-    elif connecte(donjon, position, (position[0], position[1]-1)):
+    if (position[1] != 0) and connecte(donjon, position, (position[0], position[1]-1)):
         adjacents.append((position[0], position[1]-1))
     return adjacents
 
@@ -94,6 +97,7 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
                     if i == len(dragons)-1:
                         deque.append(case)
                         return deque
+
         adjacents = cases_adjacentes(donjon, case)
         for i in adjacents:
             if i not in visite:
@@ -103,6 +107,70 @@ def intention(donjon, position, dragons, visite = []): # Pour le moment, parcour
             return None
         deque.appendleft(case)
         return deque
+
+def intention1(donjon, pos_aventurier, dragons):
+    """
+    Vérifie si un dragon se situe sur la partition du donjon de l'aventurier
+    Renvoie un chemin via la fonction fun.
+    """
+    chemin = collections.deque()
+    part_donjon = tarjan(donjon)
+    dragon = (-1,-1)
+    for i in part_donjon:
+        if pos_aventurier in i:
+            for j in range(0,len(dragons),-1):
+                if dragons[j][position] in i:
+                    dragon = dragons[j][position]
+            break
+    if dragon == (-1,-1):
+        return None
+
+    chemin.extend(fun(donjon, pos_aventurier, dragon))
+    return chemin
+
+def fun(donjon, pos, dragon, visite = []):  #nom provisoire
+    """
+    Definition du chemin:
+    """
+    visite.append(pos)
+    adjacents = cases_adjacentes(donjon, pos)
+    for i in adjacents:
+        if i not in visite:
+            if dragon == i:
+                return [pos,i]
+            return [pos, fun(donjon,i,dragon,visite)]
+
+
+def tarjan(donjon):
+    """
+    Renvoie une partition des cases connexes du donjon.
+    """
+    visite = collections.deque()
+    partition = []
+
+    def parcours(case):
+        visite.append(case)
+        voisins = cases_adjacentes(donjon,case)
+        for vois in voisins:
+            print("vois :",vois)
+            if vois not in visite:
+                parcours(vois)
+        c = []
+        while True:
+            adj = visite.pop()
+            c.append(adj)
+            if adj == case:
+                break
+        partition.append(c)
+        visite.extend(c)
+
+    for i in range(len(donjon)):
+        for j in range(len(donjon[i])):
+            case = (i,j)
+            print("case :",case)
+            if case not in visite:
+                parcours(case)
+    return partition
 
 # Tour de l'aventurier
 
