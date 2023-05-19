@@ -45,8 +45,6 @@ def connecte(donjon, position1, position2):
     Vérifie si 2 cases aux coords position1 et position2 sont connecté
     Renvoie True si oui, False sinon
     """
-    print("position1 :", position1)
-    print('position2 :', position2)
     if position1[0] == position2[0] :
         if position1[1] < position2[1]:
             if donjon[position1[0]][position1[1]][1] and donjon[position2[0]][position2[1]][3]:
@@ -67,7 +65,6 @@ def cases_adjacentes(donjon, position):
     """
     Renvoie une liste des coords (x,y) des cases adjacentes à position
     """
-    print("position :",position)
     adjacents = []
     if (position[0] != 0) and connecte(donjon, position, (position[0]-1, position[1])):
         adjacents.append((position[0]-1, position[1]))
@@ -117,10 +114,15 @@ def intention1(donjon, pos_aventurier, dragons):
     part_donjon = tarjan(donjon)
     dragon = (-1,-1)
     for i in part_donjon:
+        print("pos_aventurier :", pos_aventurier, "i est :", i)
         if pos_aventurier in i:
-            for j in range(0,len(dragons),-1):
-                if dragons[j][position] in i:
-                    dragon = dragons[j][position]
+            print("pos aventurier dans i !")
+            print("Partition :", part_donjon)
+            for j in range(len(dragons)-1,1,-1):
+                print("position dragon :", dragons[j]['position'])
+                if dragons[j]['position'] in i:
+                    dragon = dragons[j]['position']
+                    break
             break
     if dragon == (-1,-1):
         return None
@@ -139,6 +141,7 @@ def fun(donjon, pos, dragon, visite = []):  #nom provisoire
             if dragon == i:
                 return [pos,i]
             return [pos, fun(donjon,i,dragon,visite)]
+    print("visite :", visite, "adjacents :", adjacents, "pos :", pos, "dragon :", dragon)
 
 
 def tarjan(donjon):
@@ -170,6 +173,18 @@ def tarjan(donjon):
             print("case :",case)
             if case not in visite:
                 parcours(case)
+
+    for i in range(len(partition)): #Solution peu optimisé pour doublon dans partition
+        if i != len(partition)-1:
+            j = i+1
+            while j < len(partition[i:]):
+                print("j :", j, "i :", i, "len partition :", len(partition))
+                for k in partition[j]:
+                    if k in partition[i]:
+                        if len(partition[i]) < len(partition[j]):
+                            print(partition.pop(i))
+                j += 1
+
     return partition
 
 # Tour de l'aventurier
