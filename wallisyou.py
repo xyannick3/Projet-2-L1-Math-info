@@ -2,6 +2,7 @@ import graphisme.fltk as fltk
 import graphisme.graph as graph
 import moteur_de_jeu.engine as engine
 import changement.change as change
+from time import sleep
 
 #On ajoutera au fure et à mesure les imports et le code 
 #
@@ -78,35 +79,77 @@ if __name__=="__main__" :
     print('dragons=',dragons)
 
     while game :
-        print("intention",engine.intention(maze,aventurier['position'],dragons)) # test
-        print("intention Tarjan",engine.intention1(maze,aventurier['position'],dragons)) # test 
-        data=test.mappingclick(fltk.attend_clic_gauche())
-        data=[data[1],data[0]]
-        #print(data)
-        engine.pivoter(maze,data)
-        fltk.efface('wall')
-        fltk.efface('knight')
-        fltk.efface('dragon')
-        test.displayMaze(maze)
-        test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
-        for drag in dragons :
-            test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
-    # fleche=[(0,0),(0,1),(1,1),(2,1),(2,2)]
-    # test.arrow(fleche)
-    # while True : 
-    #     data=test.mappingclick(fltk.attend_clic_gauche())
-    #     data=[data[1],data[0]]
-    #     print(data)
-    #     fltk.efface('knight')
-    #     fltk.efface('dragon')
-    #     fltk.efface('diamond')
-    #     engine.pivoter(listetest,data)
-    #     fltk.efface('wall')
-    #     test.displayMaze(listetest)
-    #     # modifier ce qu'il y a ci dessous pour tester les différentes images
-    #     # test.knight(data[0],data[1],1)
-    #     # test.dragon(data[0],data[1],2)
-    #     # test.diamond(data[0],data[1])
+        fltk.efface("arrow")
+        # print("intention",engine.intention(maze,aventurier['position'],dragons)) # test
+        # print("intention Tarjan",engine.intention1(maze,aventurier['position'],dragons)) # test 
+        path =engine.dfs_with_priority_v2(maze,aventurier['position'],dragons)
+        if path!=None and len(path)!=1 :
+            print(path)
+            test.arrow(array=path)
+            ...
+        ev=fltk.attend_ev()
+        if ev[0]=="Quitte" :
+            game=False
+            change.readin.write(maze,aventurier,dragons)
+        elif ev[0]=='ClicGauche' :
+            data=test.mappingclick((fltk.abscisse(ev),fltk.ordonnee(ev)))
+            data=[data[1],data[0]]
+            #print(data)
+            engine.pivoter(maze,data)
+            fltk.efface('wall')
+            fltk.efface('knight')
+            fltk.efface('dragon')
+            test.displayMaze(maze)
+            test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
+            for drag in dragons :
+                test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
+        elif ev[0]=="Touche" :
+            if path!=None  :
+                for i in path : 
+                    print(i)
+                    aventurier['position']=i
+                    fltk.efface('knight')
+                    fltk.efface('dragon')
+                    test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
+                    for drag in dragons :
+                        test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
+
+                    fltk.mise_a_jour()
+                    sleep(0.5)
+                    engine.rencontre(aventurier,dragons,aventurier['position'])
+                    status=engine.fin_partie(aventurier,dragons)
+                    if status==-1 : 
+                        game=False
+                        fltk.efface_tout()
+                        test.displaybackground()
+                        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Defeat T_T')
+                        fltk.attend_ev()
+                    elif status==1 :
+                        game=False
+                        fltk.efface_tout()
+                        test.displaybackground()
+                        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Victory !')
+                        fltk.attend_ev()
+                    
+                    
+
+        # fleche=[(0,0),(0,1),(1,1),(2,1),(2,2)]
+        # test.arrow(fleche)
+        # while True : 
+        #     data=test.mappingclick(fltk.attend_clic_gauche())
+        #     data=[data[1],data[0]]
+        #     print(data)
+        #     fltk.efface('knight')
+        #     fltk.efface('dragon')
+        #     fltk.efface('diamond')
+        #     engine.pivoter(listetest,data)
+        #     fltk.efface('wall')
+        #     test.displayMaze(listetest)
+        #     # modifier ce qu'il y a ci dessous pour tester les différentes images
+        #     # test.knight(data[0],data[1],1)
+        #     # test.dragon(data[0],data[1],2)
+        #     # test.diamond(data[0],data[1])
 
 
-    # ... # à remplir plus tard dans le projet
+        # ... # à remplir plus tard dans le projet
+        # type "quitte" croix rouge

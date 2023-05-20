@@ -194,11 +194,11 @@ def rencontre(aventurier, dragons, pos):
     Simule la rencontre entre l'aventurier et le dragon d'index pos dans "dragons
     Suppression de l'item de dragons si niveau(aventurier)>=niveau du dragon, "mort de l'aventurier sinon)
     """
-    for i in len(dragons):
-        if dragons[i][position] == pos:
+    for i in range(len(dragons)):
+        if dragons[i]['position'] == pos: 
             if dragons[i]['niveau'] <= aventurier['niveau']:
                 dragons.pop(i)
-                aventurier[niveau] += 1
+                aventurier['niveau'] += 1
             else:
                 aventurier = 'mort'
             return None
@@ -222,3 +222,72 @@ def fin_partie(aventurier, dragons):
     elif len(dragons) == 0:
         return 1
     return 0
+from queue import PriorityQueue
+
+from queue import PriorityQueue
+
+def dfs_with_priority_v2(maze, start, goals):
+    queue = PriorityQueue()  # Priority queue to keep track of cells to explore
+    visited = set()  # Set to store visited cells
+    
+    for goal in goals:
+        position = goal['position']
+        level = goal['niveau']
+        queue.put((-level, (start, [], position, level)))  # Add start cell and goals to the priority queue
+    
+    while not queue.empty():
+        _, (current, path, goal, level) = queue.get()  # Get the current cell, path, goal, and level
+        
+        if current == goal:
+            return path + [current]  # Return the path if the goal is reached
+        
+        visited.add(current)  # Mark the current cell as visited
+        
+        neighbors = get_neighbors(maze, current)
+        
+        for neighbor in neighbors:
+            neighbor_coords = neighbor[0]
+            
+            if neighbor_coords not in visited and not is_wall(maze, current, neighbor_coords):
+                queue.put((-level, (neighbor_coords, path + [current], goal, level)))  # Add unvisited and unblocked neighbors to the queue
+
+    return None  # Return None if no path is found
+
+
+def is_wall(maze, current, neighbor):
+    row, col = current
+    neighbor_row, neighbor_col = neighbor
+    
+    if neighbor_row < row:  # Neighbor is above
+        return not maze[row][col][0] or not maze[neighbor_row][neighbor_col][2]
+    elif neighbor_row > row:  # Neighbor is below
+        return not maze[row][col][2] or not maze[neighbor_row][neighbor_col][0]
+    elif neighbor_col > col:  # Neighbor is to the right
+        return not maze[row][col][1] or not maze[neighbor_row][neighbor_col][3]
+    elif neighbor_col < col:  # Neighbor is to the left
+        return not maze[row][col][3] or not maze[neighbor_row][neighbor_col][1]
+    else:  # Same cell, no wall
+        return False
+
+
+def get_neighbors(maze, cell):
+    neighbors = []
+    row, col = cell
+    
+    # Check top neighbor
+    if row > 0 and maze[row][col][0]:
+        neighbors.append(((row - 1, col), 'top'))
+    
+    # Check right neighbor
+    if col < len(maze[0]) - 1 and maze[row][col][1]:
+        neighbors.append(((row, col + 1), 'right'))
+    
+    # Check bottom neighbor
+    if row < len(maze) - 1 and maze[row][col][2]:
+        neighbors.append(((row + 1, col), 'bottom'))
+    
+    # Check left neighbor
+    if col > 0 and maze[row][col][3]:
+        neighbors.append(((row, col - 1), 'left'))
+    
+    return neighbors
