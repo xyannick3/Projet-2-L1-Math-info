@@ -200,7 +200,7 @@ def rencontre(aventurier, dragons, pos):
                 dragons.pop(i)
                 aventurier['niveau'] += 1
             else:
-                aventurier = 'mort'
+                return 'mort'
             return None
 
 def appliquer_chemin(aventurier, dragons, chemin):
