@@ -70,14 +70,14 @@ class gameGraph() :
         """
         return mouse[0]//self.cellsize,mouse[1]//self.cellsize
 
-    def knight(self,x,y,level) :
+    def knight(self,y,x,level) :
         """
         Affiche le chevalier dans la case (x;y);\nLa taille du chevalier est 4/6 la taille d'une cellule.
         """
         fltk.image(self.cellsize//2+x*self.cellsize,self.cellsize//2+y*self.cellsize,'media/Knight_s.png',ancrage='center',largeur=int(self.cellsize*(4/6)),hauteur=int(self.cellsize*(4/6)),tag='knight')
         fltk.rectangle(x*self.cellsize+int(self.cellsize*(4/6)),y*self.cellsize+int(self.cellsize*(1/6)),x*self.cellsize+int(self.cellsize*(5/6)),y*self.cellsize+int(self.cellsize*(2/6)),remplissage='white',tag="knight")
         fltk.texte(x*self.cellsize+int(self.cellsize*(4/6)),y*self.cellsize+int(self.cellsize*(1/6)),f"{level}",ancrage="nw",tag="knight",taille=int((self.cellsize*(2/6))-(self.cellsize*(1/5))))
-    def dragon(self,x,y,level) :
+    def dragon(self,y,x,level) :
         """
         Affiche un dragon dans la case (x,y) de niveau level;
         """
@@ -91,6 +91,11 @@ class gameGraph() :
         la liste doit avoir au minimum deux éléments sinon index out of range error ^^. 
         la liste doit ressembler à quelquechose du genre [(x0:int,y0:int),...,(x:int,y:int)]
         """
+        newarray=[]
+        for i in range(len(array)) :
+            newarray.append((array[i][1],array[i][0]))
+        print(newarray)
+        array=newarray  
         fltk.fleche(self.cellsize//2+array[1][0]*self.cellsize,self.cellsize//2+array[1][1]*self.cellsize,self.cellsize//2+array[0][0]*self.cellsize,self.cellsize//2+array[0][1]*self.cellsize,'red',self.cellsize//20,tag="arrow")
         fltk.ligne(self.cellsize//2+array[1][0]*self.cellsize,self.cellsize//2+array[1][1]*self.cellsize,self.cellsize//2+array[0][0]*self.cellsize,self.cellsize//2+array[0][1]*self.cellsize,'red',self.cellsize//30,tag="arrow")
 
