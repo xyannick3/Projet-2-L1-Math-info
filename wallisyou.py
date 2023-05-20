@@ -110,15 +110,17 @@ if __name__=="__main__" :
                     aventurier['position']=i
                     fltk.efface('knight')
                     fltk.efface('dragon')
+                    life=engine.rencontre(aventurier,dragons,aventurier['position'])
+                    status=engine.fin_partie(aventurier,dragons)
                     test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
                     for drag in dragons :
                         test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
 
                     fltk.mise_a_jour()
                     sleep(0.5)
-                    engine.rencontre(aventurier,dragons,aventurier['position'])
-                    status=engine.fin_partie(aventurier,dragons)
-                    if status==-1 : 
+
+                    print(status)
+                    if life!=None : 
                         game=False
                         fltk.efface_tout()
                         test.displaybackground()

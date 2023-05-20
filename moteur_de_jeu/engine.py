@@ -200,7 +200,7 @@ def rencontre(aventurier, dragons, pos):
                 dragons.pop(i)
                 aventurier['niveau'] += 1
             else:
-                aventurier = 'mort'
+                return 'mort'
             return None
 
 def appliquer_chemin(aventurier, dragons, chemin):
@@ -237,9 +237,11 @@ def dfs_with_priority_v2(maze, start, goals):
     
     while not queue.empty():
         _, (current, path, goal, level) = queue.get()  # Get the current cell, path, goal, and level
-        
-        if current == goal:
-            return path + [current]  # Return the path if the goal is reached
+
+        #if current == goal:
+        for i in goals:
+            if current == i['position']:
+                return path + [current]  # Return the path if the goal is reached
         
         visited.add(current)  # Mark the current cell as visited
         
