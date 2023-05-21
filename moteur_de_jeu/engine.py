@@ -82,23 +82,23 @@ def cases_adjacentes(donjon, position):
 from queue import PriorityQueue
 
 def intention(donjon, posAventurier, dragons):
-    queue = PriorityQueue()  # Priority queue to keep track of cells to explore
+    queue = PriorityQueue()  # Queue pour garder trace des cases à explore
     visite = set()  # Set to store visited cells
 
     for dragon in dragons:
         position = dragon['position']
         niveau = dragon['niveau']
-        queue.put((-niveau, (posAventurier, [], position, niveau)))  # Add start cell and goals to the priority queue
+        queue.put((-niveau, (posAventurier, [], position, niveau)))  # Initialise la queue
 
     while not queue.empty():
-        _, (case, chemin, dragon, niveau) = queue.get()  # Get the current cell, path, goal, and level
+        _, (case, chemin, dragon, niveau) = queue.get()  # Obtient les données de la case actuel
 
         # if current == goal:
         for i in dragons:
             if case == i['position']:
-                return chemin + [case]  # Return the path if the goal is reached
+                return chemin + [case]  # Retourne le chemin si un dragon est trouvé
 
-        visite.add(case)  # Mark the current cell as visited
+        visite.add(case)  # Marque la case actuelle comme visite
 
         voisins = listeVoisin(donjon, case)
 
@@ -107,7 +107,7 @@ def intention(donjon, posAventurier, dragons):
 
             if coordsVoisin not in visite and not presenceMur(donjon, case, coordsVoisin):
                 queue.put((-niveau, (
-                coordsVoisin, chemin + [case], dragon, niveau)))  # Add unvisited and unblocked neighbors to the queue
+                coordsVoisin, chemin + [case], dragon, niveau)))  # Ajoute les voisins accessible non visite à la queue
 
     return None  # Aucun chemin n'est trouvé
 
@@ -131,19 +131,15 @@ def listeVoisin(donjon, case):
     voisins = []
     row, col = case
 
-    # Check top neighbor
     if row > 0 and donjon[row][col][0]:
         voisins.append(((row - 1, col), 'haut'))
 
-    # Check right neighbor
     if col < len(donjon[0]) - 1 and donjon[row][col][1]:
         voisins.append(((row, col + 1), 'droite'))
 
-    # Check bottom neighbor
     if row < len(donjon) - 1 and donjon[row][col][2]:
         voisins.append(((row + 1, col), 'bas'))
 
-    # Check left neighbor
     if col > 0 and donjon[row][col][3]:
         voisins.append(((row, col - 1), 'gauche'))
 
