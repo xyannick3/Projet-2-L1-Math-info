@@ -78,76 +78,82 @@ def cases_adjacentes(donjon, position):
     return adjacents
 
 # Intention de l'aventurier
-
 from queue import PriorityQueue
 
-def intention(donjon, posAventurier, dragons):
-    queue = PriorityQueue()  # Priority queue to keep track of cells to explore
-    visite = set()  # Set to store visited cells
-
-    for dragon in dragons:
-        position = dragon['position']
-        niveau = dragon['niveau']
-        queue.put((-niveau, (posAventurier, [], position, niveau)))  # Add start cell and goals to the priority queue
-
+def intention(maze, start, goals):
+    """
+    Parcours en largeur
+    """
+    queue = PriorityQueue()  # Priorité pour garder en compte des cellules parcourus
+    visited = set()  
+    
+    for goal in goals:
+        position = goal['position']
+        level = goal['niveau']
+        queue.put((-level, (start, [], position, level)))  
+    
     while not queue.empty():
-        _, (case, chemin, dragon, niveau) = queue.get()  # Get the current cell, path, goal, and level
+        _, (current, path, goal, level) = queue.get()  
 
-        # if current == goal:
-        for i in dragons:
-            if case == i['position']:
-                return chemin + [case]  # Return the path if the goal is reached
+        #if current == goal:
+        for i in goals:
+            if current == i['position']:
+                return path + [current]  
+        
+        visited.add(current)  
+        
+        neighbors = voisins(maze, current)
+        
+        for neighbor in neighbors:
+            neighbor_coords = neighbor[0]
 
-        visite.add(case)  # Mark the current cell as visited
+            if neighbor_coords not in visited and not passage(maze, current, neighbor_coords):
+                queue.put((-level, (neighbor_coords, path + [current], goal, level)))  
 
-        voisins = listeVoisin(donjon, case)
+    return None  
 
-        for voisin in voisins:
-            coordsVoisin = voisin[0]
 
-            if coordsVoisin not in visite and not presenceMur(donjon, case, coordsVoisin):
-                queue.put((-niveau, (
-                coordsVoisin, chemin + [case], dragon, niveau)))  # Add unvisited and unblocked neighbors to the queue
-
-    return None  # Aucun chemin n'est trouvé
-
-def presenceMur(donjon, case, voisin):
-    row, col = case
-    row_voisin, col_voisin = voisin
-
-    if row_voisin < row:  # Voisin en haut
-        return not donjon[row][col][0] or not donjon[row_voisin][col_voisin][2]
-    elif row_voisin > row:  # Voisin en bas
-        return not donjon[row][col][2] or not donjon[row_voisin][col_voisin][0]
-    elif col_voisin > col:  # Voisin à droite
-        return not donjon[row][col][1] or not donjon[row_voisin][col_voisin][3]
-    elif col_voisin < col:  # Voisin à gauche
-        return not donjon[row][col][3] or not donjon[row_voisin][col_voisin][1]
-    else:  # Case seule
+def passage(maze, current, neighbor):
+    """
+    vérifie le passage
+    """
+    row, col = current
+    neighbor_row, neighbor_col = neighbor
+    
+    if neighbor_row < row:  
+        return not maze[row][col][0] or not maze[neighbor_row][neighbor_col][2]
+    elif neighbor_row > row:  
+        return not maze[row][col][2] or not maze[neighbor_row][neighbor_col][0]
+    elif neighbor_col > col:  
+        return not maze[row][col][1] or not maze[neighbor_row][neighbor_col][3]
+    elif neighbor_col < col:  
+        return not maze[row][col][3] or not maze[neighbor_row][neighbor_col][1]
+    else: 
         return False
+def voisins(maze, cell):
+    """
+    retourne les cellules voisines
+    """
+    neighbors = []
+    row, col = cell
+    
+    # vérifie top neighbor
+    if row > 0 and maze[row][col][0]:
+        neighbors.append(((row - 1, col), 'top'))
+    
+    # vérifie right neighbor
+    if col < len(maze[0]) - 1 and maze[row][col][1]:
+        neighbors.append(((row, col + 1), 'right'))
+    
+    # vérifie bottom neighbor
+    if row < len(maze) - 1 and maze[row][col][2]:
+        neighbors.append(((row + 1, col), 'bottom'))
+    
+    # vérifie left neighbor
+    if col > 0 and maze[row][col][3]:
+        neighbors.append(((row, col - 1), 'left'))
 
-
-def listeVoisin(donjon, case):
-    voisins = []
-    row, col = case
-
-    # Check top neighbor
-    if row > 0 and donjon[row][col][0]:
-        voisins.append(((row - 1, col), 'haut'))
-
-    # Check right neighbor
-    if col < len(donjon[0]) - 1 and donjon[row][col][1]:
-        voisins.append(((row, col + 1), 'droite'))
-
-    # Check bottom neighbor
-    if row < len(donjon) - 1 and donjon[row][col][2]:
-        voisins.append(((row + 1, col), 'bas'))
-
-    # Check left neighbor
-    if col > 0 and donjon[row][col][3]:
-        voisins.append(((row, col - 1), 'gauche'))
-
-    return voisins
+    return neighbors
 
 # Tour de l'aventurier
 

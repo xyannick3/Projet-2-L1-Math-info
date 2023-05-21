@@ -22,7 +22,7 @@ if __name__=="__main__" :
     firstbutton=False
     while menuee :
         ...
-        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Load Previous Game')
+        menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Save')
         menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//4+resolution[0]//20,"Play")
         menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]-resolution[0]//4-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]-resolution[0]//4+resolution[0]//20,"Quit")
         data=fltk.attend_clic_gauche()
@@ -63,6 +63,7 @@ if __name__=="__main__" :
                 print('x1',data[0]>=listofx1s[i],'\nx2',data[0]<=listofx2s[i],'\ny1',data[1]>=listofy1s[i],'\ny2',data[1]<=listofy2s[i])
                 if (data[0]>=listofx1s[i] and data[0]<=listofx2s[i]) and (data[1]<=listofy1s[i] and data[1]>=listofy2s[i]) :
                     content=change.readin.lire(f"media/maps/{maps[i]}")
+                    selected=i
                     selectionmap=False
                     fltk.efface('bouton')
     else : 
@@ -74,20 +75,18 @@ if __name__=="__main__" :
     test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
     for drag in dragons :
         test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
-    print('donjon=',maze)
-    print('position = ',aventurier['position'])
-    print('dragons=',dragons)
 
     while game :
         fltk.efface("arrow")
         # print("intention",engine.intention(maze,aventurier['position'],dragons)) # test
         # print("intention Tarjan",engine.intention1(maze,aventurier['position'],dragons)) # test 
-        path =engine.dfs_with_priority_v2(maze,aventurier['position'],dragons)
+        path =engine.intention(maze,aventurier['position'],dragons)
         if path!=None and len(path)!=1 :
             print(path)
             test.arrow(array=path)
             ...
         ev=fltk.attend_ev()
+        print(ev)
         if ev[0]=="Quitte" :
             game=False
             change.readin.write(maze,aventurier,dragons)
@@ -104,7 +103,9 @@ if __name__=="__main__" :
             for drag in dragons :
                 test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
         elif ev[0]=="Touche" :
-            if path!=None  :
+            touche=fltk.touche(ev)
+            print(touche)
+            if path!=None and touche=="space" :
                 for i in path : 
                     print(i)
                     aventurier['position']=i
@@ -132,26 +133,16 @@ if __name__=="__main__" :
                         test.displaybackground()
                         menutest.button(resolution[0]//2-resolution[0]//5,resolution[0]//2-resolution[0]//20,resolution[0]//2+resolution[0]//5,resolution[0]//2+resolution[0]//20,'Victory !')
                         fltk.attend_ev()
-                    
-                    
-
-        # fleche=[(0,0),(0,1),(1,1),(2,1),(2,2)]
-        # test.arrow(fleche)
-        # while True : 
-        #     data=test.mappingclick(fltk.attend_clic_gauche())
-        #     data=[data[1],data[0]]
-        #     print(data)
-        #     fltk.efface('knight')
-        #     fltk.efface('dragon')
-        #     fltk.efface('diamond')
-        #     engine.pivoter(listetest,data)
-        #     fltk.efface('wall')
-        #     test.displayMaze(listetest)
-        #     # modifier ce qu'il y a ci dessous pour tester les différentes images
-        #     # test.knight(data[0],data[1],1)
-        #     # test.dragon(data[0],data[1],2)
-        #     # test.diamond(data[0],data[1])
-
-
-        # ... # à remplir plus tard dans le projet
-        # type "quitte" croix rouge
+            elif touche=="r" :
+                fltk.efface_tout()
+                print('test')
+                content=change.readin.lire(f"media/maps/{maps[selected]}")
+                maze=content[0]
+                aventurier=content[1]
+                dragons=content[2]
+                test.displaybackground()
+                test.displayMaze(maze)
+                test.knight(aventurier['position'][0],aventurier['position'][1],aventurier['niveau'])
+                for drag in dragons :
+                    test.dragon(drag['position'][0],drag['position'][1],drag['niveau'])
+                fltk.mise_a_jour()

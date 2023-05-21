@@ -94,6 +94,7 @@ class gameGraph() :
         newarray=[]
         for i in range(len(array)) :
             newarray.append((array[i][1],array[i][0]))
+        newarray=newarray[::-1]
         print(newarray)
         array=newarray  
         fltk.fleche(self.cellsize//2+array[1][0]*self.cellsize,self.cellsize//2+array[1][1]*self.cellsize,self.cellsize//2+array[0][0]*self.cellsize,self.cellsize//2+array[0][1]*self.cellsize,'red',self.cellsize//20,tag="arrow")
