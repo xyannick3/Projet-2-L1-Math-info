@@ -78,114 +78,76 @@ def cases_adjacentes(donjon, position):
 
 # Intention de l'aventurier
 
-def intention(donjon, position, dragons, visite = []): # Pour le moment, parcours en largeur
-    """
-    Parcours en largeur du donjon, renvoie deque qui est le chemin à prendre
-    """
-    deque = collections.deque()
-    deque.appendleft(position)
-    dragon = ((None,None),0)
-    while len(deque) != 0:
-        case = deque.popleft()
-        for i in range(len(dragons)):
-            if case == dragons[i]['position']:
-                if dragons[i]['niveau'] > dragon:
-                    dragon = dragons[i]
-                    if i == len(dragons)-1:
-                        deque.append(case)
-                        return deque
+from queue import PriorityQueue
 
-        adjacents = cases_adjacentes(donjon, case)
-        for i in adjacents:
-            if i not in visite:
-                visite.append(i)
-                deque.extendleft(intention(donjon, i, dragons, visite))
-        if len(deque) == 0:
-            return None
-        deque.appendleft(case)
-        return deque
+def intention(donjon, posAventurier, dragons):
+    queue = PriorityQueue()  # Priority queue to keep track of cells to explore
+    visite = set()  # Set to store visited cells
 
-def intention1(donjon, pos_aventurier, dragons):
-    """
-    Vérifie si un dragon se situe sur la partition du donjon de l'aventurier
-    Renvoie un chemin via la fonction fun.
-    """
-    chemin = collections.deque()
-    part_donjon = tarjan(donjon)
-    dragon = (-1,-1)
-    for i in part_donjon:
-        print("pos_aventurier :", pos_aventurier, "i est :", i)
-        if pos_aventurier in i:
-            print("pos aventurier dans i !")
-            print("Partition :", part_donjon)
-            for j in range(len(dragons)-1,1,-1):
-                print("position dragon :", dragons[j]['position'])
-                if dragons[j]['position'] in i:
-                    dragon = dragons[j]['position']
-                    break
-            break
-    if dragon == (-1,-1):
-        return None
+    for dragon in dragons:
+        position = dragon['position']
+        niveau = dragon['niveau']
+        queue.put((-level, (start, [], position, level)))  # Add start cell and goals to the priority queue
 
-    chemin.extend(fun(donjon, pos_aventurier, dragon))
-    return chemin
+    while not queue.empty():
+        _, (current, path, goal, level) = queue.get()  # Get the current cell, path, goal, and level
 
-def fun(donjon, pos, dragon, visite = []):  #nom provisoire
-    """
-    Definition du chemin:
-    """
-    visite.append(pos)
-    adjacents = cases_adjacentes(donjon, pos)
-    for i in adjacents:
-        if i not in visite:
-            if dragon == i:
-                return [pos,i]
-            return [pos, fun(donjon,i,dragon,visite)]
-    print("visite :", visite, "adjacents :", adjacents, "pos :", pos, "dragon :", dragon)
+        # if current == goal:
+        for i in goals:
+            if current == i['position']:
+                return path + [current]  # Return the path if the goal is reached
+
+        visited.add(current)  # Mark the current cell as visited
+
+        neighbors = cases_adjacentes(donjon, position)
+
+        for neighbor in neighbors:
+            neighbor_coords = neighbor[0]
+
+            if neighbor_coords not in visite:
+                queue.put((-level, (
+                neighbor_coords, path + [current], goal, level)))  # Add unvisited and unblocked neighbors to the queue
+
+    return None  # Return None if no path is found
 
 
-def tarjan(donjon):
-    """
-    Renvoie une partition des cases connexes du donjon.
-    """
-    visite = collections.deque()
-    partition = []
+def is_wall(maze, current, neighbor):
+    row, col = current
+    neighbor_row, neighbor_col = neighbor
 
-    def parcours(case):
-        visite.append(case)
-        voisins = cases_adjacentes(donjon,case)
-        for vois in voisins:
-            print("vois :",vois)
-            if vois not in visite:
-                parcours(vois)
-        c = []
-        while True:
-            adj = visite.pop()
-            c.append(adj)
-            if adj == case:
-                break
-        partition.append(c)
-        visite.extend(c)
+    if neighbor_row < row:  # Neighbor is above
+        return not maze[row][col][0] or not maze[neighbor_row][neighbor_col][2]
+    elif neighbor_row > row:  # Neighbor is below
+        return not maze[row][col][2] or not maze[neighbor_row][neighbor_col][0]
+    elif neighbor_col > col:  # Neighbor is to the right
+        return not maze[row][col][1] or not maze[neighbor_row][neighbor_col][3]
+    elif neighbor_col < col:  # Neighbor is to the left
+        return not maze[row][col][3] or not maze[neighbor_row][neighbor_col][1]
+    else:  # Same cell, no wall
+        return False
 
-    for i in range(len(donjon)):
-        for j in range(len(donjon[i])):
-            case = (i,j)
-            print("case :",case)
-            if case not in visite:
-                parcours(case)
 
-    for i in range(len(partition)): #Solution peu optimisé pour doublon dans partition
-        if i != len(partition)-1:
-            j = i+1
-            while j < len(partition[i:]):
-                print("j :", j, "i :", i, "len partition :", len(partition))
-                for k in partition[j]:
-                    if k in partition[i]:
-                        if len(partition[i]) < len(partition[j]):
-                            print(partition.pop(i))
-                j += 1
+def get_neighbors(maze, cell):
+    neighbors = []
+    row, col = cell
 
-    return partition
+    # Check top neighbor
+    if row > 0 and maze[row][col][0]:
+        neighbors.append(((row - 1, col), 'top'))
+
+    # Check right neighbor
+    if col < len(maze[0]) - 1 and maze[row][col][1]:
+        neighbors.append(((row, col + 1), 'right'))
+
+    # Check bottom neighbor
+    if row < len(maze) - 1 and maze[row][col][2]:
+        neighbors.append(((row + 1, col), 'bottom'))
+
+    # Check left neighbor
+    if col > 0 and maze[row][col][3]:
+        neighbors.append(((row, col - 1), 'left'))
+
+    return neighbors
 
 # Tour de l'aventurier
 
@@ -222,74 +184,3 @@ def fin_partie(aventurier, dragons):
     elif len(dragons) == 0:
         return 1
     return 0
-from queue import PriorityQueue
-
-from queue import PriorityQueue
-
-def dfs_with_priority_v2(maze, start, goals):
-    queue = PriorityQueue()  # Priority queue to keep track of cells to explore
-    visited = set()  # Set to store visited cells
-    
-    for goal in goals:
-        position = goal['position']
-        level = goal['niveau']
-        queue.put((-level, (start, [], position, level)))  # Add start cell and goals to the priority queue
-    
-    while not queue.empty():
-        _, (current, path, goal, level) = queue.get()  # Get the current cell, path, goal, and level
-
-        #if current == goal:
-        for i in goals:
-            if current == i['position']:
-                return path + [current]  # Return the path if the goal is reached
-        
-        visited.add(current)  # Mark the current cell as visited
-        
-        neighbors = get_neighbors(maze, current)
-        
-        for neighbor in neighbors:
-            neighbor_coords = neighbor[0]
-            
-            if neighbor_coords not in visited and not is_wall(maze, current, neighbor_coords):
-                queue.put((-level, (neighbor_coords, path + [current], goal, level)))  # Add unvisited and unblocked neighbors to the queue
-
-    return None  # Return None if no path is found
-
-
-def is_wall(maze, current, neighbor):
-    row, col = current
-    neighbor_row, neighbor_col = neighbor
-    
-    if neighbor_row < row:  # Neighbor is above
-        return not maze[row][col][0] or not maze[neighbor_row][neighbor_col][2]
-    elif neighbor_row > row:  # Neighbor is below
-        return not maze[row][col][2] or not maze[neighbor_row][neighbor_col][0]
-    elif neighbor_col > col:  # Neighbor is to the right
-        return not maze[row][col][1] or not maze[neighbor_row][neighbor_col][3]
-    elif neighbor_col < col:  # Neighbor is to the left
-        return not maze[row][col][3] or not maze[neighbor_row][neighbor_col][1]
-    else:  # Same cell, no wall
-        return False
-
-
-def get_neighbors(maze, cell):
-    neighbors = []
-    row, col = cell
-    
-    # Check top neighbor
-    if row > 0 and maze[row][col][0]:
-        neighbors.append(((row - 1, col), 'top'))
-    
-    # Check right neighbor
-    if col < len(maze[0]) - 1 and maze[row][col][1]:
-        neighbors.append(((row, col + 1), 'right'))
-    
-    # Check bottom neighbor
-    if row < len(maze) - 1 and maze[row][col][2]:
-        neighbors.append(((row + 1, col), 'bottom'))
-    
-    # Check left neighbor
-    if col > 0 and maze[row][col][3]:
-        neighbors.append(((row, col - 1), 'left'))
-    
-    return neighbors
