@@ -66,6 +66,7 @@ def cases_adjacentes(donjon, position):
     Renvoie une liste des coords (x,y) des cases adjacentes à position
     """
     adjacents = []
+    print(position)
     if (position[0] != 0) and connecte(donjon, position, (position[0]-1, position[1])):
         adjacents.append((position[0]-1, position[1]))
     if (position[1] != len(donjon[0])-1) and connecte(donjon, position, (position[0], position[1]+1)):
@@ -153,6 +154,7 @@ def voisins(maze, cell):
         neighbors.append(((row, col - 1), 'left'))
 
     return neighbors
+
 # Tour de l'aventurier
 
 def rencontre(aventurier, dragons, pos):
